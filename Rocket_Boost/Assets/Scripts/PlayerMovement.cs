@@ -69,16 +69,56 @@ public class PlayerMovement : MonoBehaviour
          | /      <- (this axis)
          |/       <- (this axis)
          / - - - - - - ->
-         */
+     
+        Clockwise:
 
+        /-\
+         |     /
+         |   _/_   <--rotation path   Spin  :D
+         |  //  \  <--rotation path     2   :D
+         | |/    | <--rotation path    Win! :D
+         | /\   /  <--rotation path         :D
+         |/  <--
+         / - - - - - - ->
+
+        Counter-Clockwise:
+
+        /-\
+         |     /
+         |   _/_   <--rotation path   Win!  :D
+         |  //  \  <--rotation path     2   :D
+         | |/    | <--rotation path    Spin :D
+         | /\   /  <--rotation path         :D
+         |/  -->
+         / - - - - - - ->
+
+
+            -              -              - 
+          /   \          /   \           /   \
+        -       -      -       -       -       -       -
+                  \   /           \   /           \   /
+                    -              -               -
+         */
 
         if (rotation.ReadValue<float>() < 0)
         {
-            rb.AddRelativeTorque(Vector3.forward * torqueAmount * Time.fixedDeltaTime);
+            ApplyRotation(Vector3.forward, torqueAmount);
         }
-        if (rotation.ReadValue<float>() > 0)
+        else if (rotation.ReadValue<float>() > 0)
         {
-            rb.AddRelativeTorque(-Vector3.forward * torqueAmount * Time.fixedDeltaTime);
+            ApplyRotation(-Vector3.forward, torqueAmount);
         }
+    }
+
+    //Triple comment = description. Double comment = comment
+    //Comment quality = Top-notch
+
+    /// <summary>
+    /// Rotation about the given vector. Pass a positive torque amount
+    /// </summary>
+    void ApplyRotation(Vector3 rotationDir, float torqueAmount)
+    {
+        torqueAmount = Mathf.Abs(torqueAmount);
+        rb.AddRelativeTorque(rotationDir * torqueAmount * Time.fixedDeltaTime);
     }
 }
