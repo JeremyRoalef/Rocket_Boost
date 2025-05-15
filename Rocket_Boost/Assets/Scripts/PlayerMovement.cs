@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
     //Note: These create input actions in the script itself. The action map is not being referenced here
@@ -12,6 +13,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField]
     [Tooltip("Input that enables the rocket rotation")]
     InputAction rotation;
+
+    [SerializeField]
+    float forceAmount = 10f;
+
+    Rigidbody rb;
 
     private void OnEnable()
     {
@@ -25,16 +31,21 @@ public class PlayerMovement : MonoBehaviour
         rotation.Disable();
     }
 
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
     void Start()
     {
         
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (thrust.IsPressed())
         {
-            Debug.Log("Thrusting");
+            rb.AddRelativeForce(Vector3.up * forceAmount * Time.fixedDeltaTime);
         }
         if (rotation.ReadValue<float>() < 0)
         {
