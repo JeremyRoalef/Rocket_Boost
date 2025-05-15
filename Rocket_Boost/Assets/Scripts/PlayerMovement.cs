@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
@@ -16,6 +17,9 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField]
     float forceAmount = 10f;
+
+    [SerializeField]
+    float torqueAmount = 100f;
 
     Rigidbody rb;
 
@@ -43,17 +47,38 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        ThrustShip();
+        RotateShip();
+    }
+
+    private void ThrustShip()
+    {
         if (thrust.IsPressed())
         {
             rb.AddRelativeForce(Vector3.up * forceAmount * Time.fixedDeltaTime);
         }
+    }
+
+    private void RotateShip()
+    {
+        /*
+        /-\    /  <- (this axis)
+         |    /   <- (this axis)
+         |   /    <- (this axis)
+         |  /     <- (this axis)
+         | /      <- (this axis)
+         |/       <- (this axis)
+         / - - - - - - ->
+         */
+
+
         if (rotation.ReadValue<float>() < 0)
         {
-            Debug.Log("A-pressed");
+            rb.AddRelativeTorque(Vector3.forward * torqueAmount * Time.fixedDeltaTime);
         }
         if (rotation.ReadValue<float>() > 0)
         {
-            Debug.Log("D-pressed");
+            rb.AddRelativeTorque(-Vector3.forward * torqueAmount * Time.fixedDeltaTime);
         }
     }
 }

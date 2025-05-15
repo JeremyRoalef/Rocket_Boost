@@ -673,6 +673,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 2527470981292242161, guid: 8bdba03a660217243b9be8ad16e0f591, type: 3}
+      propertyPath: m_AngularDrag
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2527470981292242161, guid: 8bdba03a660217243b9be8ad16e0f591, type: 3}
       propertyPath: m_Constraints
       value: 48
       objectReference: {fileID: 0}
