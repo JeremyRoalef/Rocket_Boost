@@ -108,6 +108,9 @@ public class PlayerMovement : MonoBehaviour
         {
             ApplyRotation(-Vector3.forward, torqueAmount);
         }
+        else
+        {
+        }
     }
 
     //Triple comment = description. Double comment = comment
