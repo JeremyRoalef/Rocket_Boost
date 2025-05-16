@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -7,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
 {
     //Note: These create input actions in the script itself. The action map is not being referenced here
 
+    [Header("Input Actions")]
     [SerializeField]
     [Tooltip("Input that enables the rocket thrust")]
     InputAction thrust;
@@ -15,6 +17,10 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("Input that enables the rocket rotation")]
     InputAction rotation;
 
+    [Header("Local References")]
+    AudioSource audioSource;
+
+    [Header("Settings")]
     [SerializeField]
     float forceAmount = 10f;
 
@@ -22,6 +28,8 @@ public class PlayerMovement : MonoBehaviour
     float torqueAmount = 100f;
 
     Rigidbody rb;
+    bool isThrusting = false;
+    bool isRotating = false;
 
     private void OnEnable()
     {
@@ -38,6 +46,10 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
     }
 
     void Start()
@@ -47,6 +59,27 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        HandleMovement();
+        HandleAudio();
+    }
+
+    private void HandleAudio()
+    {
+        if (isThrusting || isRotating)
+        {
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
+        }
+        else
+        {
+            audioSource.Stop();
+        }
+    }
+
+    private void HandleMovement()
+    {
         ThrustShip();
         RotateShip();
     }
@@ -55,7 +88,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (thrust.IsPressed())
         {
+            isThrusting = true;
             rb.AddRelativeForce(Vector3.up * forceAmount * Time.fixedDeltaTime);
+        }
+        else
+        {
+            isThrusting = false;
         }
     }
 
@@ -102,14 +140,17 @@ public class PlayerMovement : MonoBehaviour
 
         if (rotation.ReadValue<float>() < 0)
         {
+            isRotating = true;
             ApplyRotation(Vector3.forward, torqueAmount);
         }
         else if (rotation.ReadValue<float>() > 0)
         {
+            isRotating = true;
             ApplyRotation(-Vector3.forward, torqueAmount);
         }
         else
         {
+            isRotating = false;
         }
     }
 
