@@ -1,10 +1,16 @@
-using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(PlayerMovement))]
 public class CollisionDetection : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField]
+    [Tooltip("The script responsible for player movement")]
+    PlayerMovement playerMovement;
+
     [SerializeField]
     AudioSource collisionSource;
 
@@ -15,7 +21,19 @@ public class CollisionDetection : MonoBehaviour
     AudioClip levelCompleteClip;
 
     [SerializeField]
+    [Tooltip("The parent game object containing the player mesh renderer components")]
+    GameObject parentRenderer;
+
+
+    [Header("Settings")]
+    [SerializeField]
     float delayBeforeSceneReload = 3f;
+
+    [SerializeField]
+    float minRendererForce = -10;
+
+    [SerializeField]
+    float maxRendererForce = 10;
 
     bool isDead = false;
     bool hasFinishedLevel = false;
@@ -24,6 +42,17 @@ public class CollisionDetection : MonoBehaviour
     const string FRIENDLY_TAG_STRING = "Friendly";
     const string FINISH_TAG_STRING = "Finish";
     const string FUEL_TAG_STRING = "Fuel";
+
+    private void Awake()
+    {
+        if (playerMovement == null)
+        {
+            if (!TryGetComponent<PlayerMovement>(out playerMovement))
+            {
+                Debug.LogWarning("No player movement script found");
+            }
+        }
+    }
 
     private void OnCollisionEnter(Collision other)
     {
@@ -35,9 +64,6 @@ public class CollisionDetection : MonoBehaviour
             case FINISH_TAG_STRING:
                 HandleLevelComplete();
                 break;
-            case FUEL_TAG_STRING:
-                Debug.Log("You collected fuel");
-                break;
             default:
                 HandleDeath();
                 break;
@@ -46,9 +72,20 @@ public class CollisionDetection : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        
+        switch (other.gameObject.tag)
+        {
+            case FUEL_TAG_STRING:
+                HandleFuelGain(other);
+                break;
+            default:
+                Debug.Log("TRIGGERED!");
+                break;
+        }
     }
 
+    /// <summary>
+    /// Method to handle level completion logic (i.e., audio playing, scene loading, etc.)
+    /// </summary>
     private void HandleLevelComplete()
     {
         //Invalid Checks
@@ -65,6 +102,9 @@ public class CollisionDetection : MonoBehaviour
         StartCoroutine(LoadNextLevel());
     }
 
+    /// <summary>
+    /// Method to handle death logic (i.e., particle systems, scene loading, audio, etc.)
+    /// </summary>
     void HandleDeath()
     {
         //Invalid Checks
@@ -78,23 +118,67 @@ public class CollisionDetection : MonoBehaviour
 
         //Logic
         isDead = true;
+        playerMovement.enabled = false;
+        DeparentRenderer();
         StartCoroutine(LoadCurrentLevel());
     }
 
+    private void DeparentRenderer()
+    {
+        Rigidbody childRB;
+        foreach (Transform child in parentRenderer.transform)
+        {
+            //No more parent
+            child.SetParent(null);
+
+            //Enable collision
+            child.GetComponent<BoxCollider>().enabled = true;
+
+            //Apply random force
+            childRB = child.AddComponent<Rigidbody>();
+            childRB.AddForce(new Vector3(
+                Random.Range(minRendererForce, maxRendererForce), 
+                Random.Range(minRendererForce, maxRendererForce),
+                Random.Range(minRendererForce, maxRendererForce)
+                ));
+        }
+    }
+
+    /// <summary>
+    /// Method to handle fuel collection
+    /// </summary>
+    /// <param name="other">The collider of the object tagged 'fuel'</param>
+    private void HandleFuelGain(Collider other)
+    {
+        Debug.Log("Fuel Picked Up");
+        Destroy(other.gameObject);
+    }
+
+    /// <summary>
+    /// Coroutine to load the next level after delay
+    /// </summary>
+    /// <returns></returns>
     IEnumerator LoadNextLevel()
     {
+        //Get next level indes
         int nextLevelIndex = SceneManager.GetActiveScene().buildIndex + 1;
         if (nextLevelIndex > SceneManager.sceneCount)
         {
             nextLevelIndex = 0;
         }
 
+        //Load next level
         yield return new WaitForSeconds(delayBeforeSceneReload);
         SceneManager.LoadScene(nextLevelIndex);
     }
 
+    /// <summary>
+    /// Coroutine to load next level after delay
+    /// </summary>
+    /// <returns></returns>
     IEnumerator LoadCurrentLevel()
     {
+        //Load current level
         yield return new WaitForSeconds(delayBeforeSceneReload);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

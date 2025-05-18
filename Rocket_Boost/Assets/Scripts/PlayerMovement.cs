@@ -41,6 +41,8 @@ public class PlayerMovement : MonoBehaviour
     {
         thrust.Disable();
         rotation.Disable();
+
+        audioSource.Stop();
     }
 
     private void Awake()
