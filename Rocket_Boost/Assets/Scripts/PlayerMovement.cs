@@ -18,16 +18,23 @@ public class PlayerMovement : MonoBehaviour
     InputAction rotation;
 
     [Header("Local References")]
+    [SerializeField]
+    [Tooltip("The audio source responsible for playing movement sounds")]
     AudioSource audioSource;
 
     [Header("Settings")]
     [SerializeField]
+    [Tooltip("The amount of force that will move the player up")]
     float forceAmount = 10f;
 
     [SerializeField]
+    [Tooltip("The amount of torque that the player will rotate")]
     float torqueAmount = 100f;
 
+
     Rigidbody rb;
+
+
     bool isThrusting = false;
     bool isRotating = false;
 
@@ -47,16 +54,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        //Initialize references
         rb = GetComponent<Rigidbody>();
         if (audioSource == null)
         {
-            audioSource = GetComponent<AudioSource>();
+            if(!TryGetComponent<AudioSource>(out audioSource))
+            {
+                Debug.LogWarning($"No audio source given for {gameObject.name}");
+            }
         }
-    }
-
-    void Start()
-    {
-        
     }
 
     void FixedUpdate()
@@ -65,8 +71,12 @@ public class PlayerMovement : MonoBehaviour
         HandleAudio();
     }
 
+    /// <summary>
+    /// Method to handle audio playing
+    /// </summary>
     private void HandleAudio()
     {
+        //Check condition logic
         if (isThrusting || isRotating)
         {
             if (!audioSource.isPlaying)
@@ -74,31 +84,43 @@ public class PlayerMovement : MonoBehaviour
                 audioSource.Play();
             }
         }
+        //Do not play audio
         else
         {
             audioSource.Stop();
         }
     }
 
+    /// <summary>
+    /// Method to handle the player movement logic
+    /// </summary>
     private void HandleMovement()
     {
         ThrustShip();
         RotateShip();
     }
 
+    /// <summary>
+    /// Method to thrust the ship upwards
+    /// </summary>
     private void ThrustShip()
     {
+        //Check for thrusing
         if (thrust.IsPressed())
         {
             isThrusting = true;
             rb.AddRelativeForce(Vector3.up * forceAmount * Time.fixedDeltaTime);
         }
+        //No thrusting
         else
         {
             isThrusting = false;
         }
     }
 
+    /// <summary>
+    /// Method to rotate the ship
+    /// </summary>
     private void RotateShip()
     {
         /*
@@ -140,6 +162,7 @@ public class PlayerMovement : MonoBehaviour
                     -              -               -
          */
 
+        //Chech for Rotation
         if (rotation.ReadValue<float>() < 0)
         {
             isRotating = true;
@@ -150,6 +173,7 @@ public class PlayerMovement : MonoBehaviour
             isRotating = true;
             ApplyRotation(-Vector3.forward, torqueAmount);
         }
+        //No rotation
         else
         {
             isRotating = false;

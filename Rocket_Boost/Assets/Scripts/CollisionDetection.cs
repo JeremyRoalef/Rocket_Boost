@@ -12,12 +12,15 @@ public class CollisionDetection : MonoBehaviour
     PlayerMovement playerMovement;
 
     [SerializeField]
+    [Tooltip("The audio source responsible for playing audio")]
     AudioSource collisionSource;
 
     [SerializeField]
+    [Tooltip("The audio clip that sounds like the player dying")]
     AudioClip deathClip;
 
     [SerializeField]
+    [Tooltip("The audio clip that sounds like a success")]
     AudioClip levelCompleteClip;
 
     [SerializeField]
@@ -27,13 +30,17 @@ public class CollisionDetection : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField]
+    [Tooltip("The delay between finishing the current level and loading the next level")]
     float delayBeforeSceneReload = 3f;
 
     [SerializeField]
+    [Tooltip("The minimum force that can be applied to the renderer game objects")]
     float minRendererForce = -10;
 
     [SerializeField]
+    [Tooltip("The maximum force that can be applied to the renderer game objects")]
     float maxRendererForce = 10;
+
 
     bool isDead = false;
     bool hasFinishedLevel = false;
@@ -45,6 +52,7 @@ public class CollisionDetection : MonoBehaviour
 
     private void Awake()
     {
+        //Check for player movement script
         if (playerMovement == null)
         {
             if (!TryGetComponent<PlayerMovement>(out playerMovement))
@@ -123,6 +131,9 @@ public class CollisionDetection : MonoBehaviour
         StartCoroutine(LoadCurrentLevel());
     }
 
+    /// <summary>
+    /// Method to deparent and apply a random force to the renderer game objects on the player.
+    /// </summary>
     private void DeparentRenderer()
     {
         Rigidbody childRB;
