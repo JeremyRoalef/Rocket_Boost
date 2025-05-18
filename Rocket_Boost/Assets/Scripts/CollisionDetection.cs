@@ -6,15 +6,19 @@ using UnityEngine.SceneManagement;
 public class CollisionDetection : MonoBehaviour
 {
     [SerializeField]
-    AudioSource deathSource;
+    AudioSource collisionSource;
 
     [SerializeField]
     AudioClip deathClip;
 
     [SerializeField]
+    AudioClip levelCompleteClip;
+
+    [SerializeField]
     float delayBeforeSceneReload = 3f;
 
     bool isDead = false;
+    bool hasFinishedLevel = false;
 
     //Tag strings
     const string FRIENDLY_TAG_STRING = "Friendly";
@@ -29,14 +33,13 @@ public class CollisionDetection : MonoBehaviour
                 Debug.Log("You hit a friendly object");
                 break;
             case FINISH_TAG_STRING:
-                Debug.Log("You finished the level");
+                HandleLevelComplete();
                 break;
             case FUEL_TAG_STRING:
                 Debug.Log("You collected fuel");
                 break;
             default:
-                if (isDead) break;
-                StartCoroutine(HandleDeath());
+                HandleDeath();
                 break;
         }
     }
@@ -46,13 +49,52 @@ public class CollisionDetection : MonoBehaviour
         
     }
 
-    IEnumerator HandleDeath()
+    private void HandleLevelComplete()
     {
-        isDead = true;
-        deathSource.Stop();
-        deathSource.clip = deathClip;
-        deathSource.Play();
+        //Invalid Checks
+        if (isDead) return;
+        if (hasFinishedLevel) return;
 
+        //Audio
+        collisionSource.Stop();
+        collisionSource.clip = levelCompleteClip;
+        collisionSource.Play();
+
+        //Logic
+        hasFinishedLevel = true;
+        StartCoroutine(LoadNextLevel());
+    }
+
+    void HandleDeath()
+    {
+        //Invalid Checks
+        if (hasFinishedLevel) return;
+        if (isDead) return;
+
+        //Audio
+        collisionSource.Stop();
+        collisionSource.clip = deathClip;
+        collisionSource.Play();
+
+        //Logic
+        isDead = true;
+        StartCoroutine(LoadCurrentLevel());
+    }
+
+    IEnumerator LoadNextLevel()
+    {
+        int nextLevelIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        if (nextLevelIndex > SceneManager.sceneCount)
+        {
+            nextLevelIndex = 0;
+        }
+
+        yield return new WaitForSeconds(delayBeforeSceneReload);
+        SceneManager.LoadScene(nextLevelIndex);
+    }
+
+    IEnumerator LoadCurrentLevel()
+    {
         yield return new WaitForSeconds(delayBeforeSceneReload);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

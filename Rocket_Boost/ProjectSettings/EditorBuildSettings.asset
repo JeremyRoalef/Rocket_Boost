@@ -8,6 +8,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Sandbox.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/1) Simple.unity
+    guid: 6e72727d87b14db46b2c472cd3147156
+  - enabled: 1
+    path: Assets/Scenes/2) SimpleToo.unity
+    guid: 6a989211af3d3bd4382646729c2aaabb
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
