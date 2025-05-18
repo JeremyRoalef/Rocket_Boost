@@ -1,7 +1,21 @@
+using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CollisionDetection : MonoBehaviour
 {
+    [SerializeField]
+    AudioSource deathSource;
+
+    [SerializeField]
+    AudioClip deathClip;
+
+    [SerializeField]
+    float delayBeforeSceneReload = 3f;
+
+    bool isDead = false;
+
     //Tag strings
     const string FRIENDLY_TAG_STRING = "Friendly";
     const string FINISH_TAG_STRING = "Finish";
@@ -21,7 +35,8 @@ public class CollisionDetection : MonoBehaviour
                 Debug.Log("You collected fuel");
                 break;
             default:
-                Debug.Log("You Died");
+                if (isDead) break;
+                StartCoroutine(HandleDeath());
                 break;
         }
     }
@@ -29,5 +44,16 @@ public class CollisionDetection : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         
+    }
+
+    IEnumerator HandleDeath()
+    {
+        isDead = true;
+        deathSource.Stop();
+        deathSource.clip = deathClip;
+        deathSource.Play();
+
+        yield return new WaitForSeconds(delayBeforeSceneReload);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
