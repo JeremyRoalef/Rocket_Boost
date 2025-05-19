@@ -31,6 +31,14 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("The amount of torque that the player will rotate")]
     float torqueAmount = 100f;
 
+    [SerializeField]
+    ParticleSystem mainThrustVFX;
+
+    [SerializeField]
+    ParticleSystem leftSideThrustVFX;
+
+    [SerializeField]
+    ParticleSystem rightSideThrustVFX;
 
     Rigidbody rb;
 
@@ -108,12 +116,14 @@ public class PlayerMovement : MonoBehaviour
         //Check for thrusing
         if (thrust.IsPressed())
         {
+            mainThrustVFX.Play();
             isThrusting = true;
             rb.AddRelativeForce(Vector3.up * forceAmount * Time.fixedDeltaTime);
         }
         //No thrusting
         else
         {
+            mainThrustVFX.Stop();
             isThrusting = false;
         }
     }
@@ -165,17 +175,21 @@ public class PlayerMovement : MonoBehaviour
         //Chech for Rotation
         if (rotation.ReadValue<float>() < 0)
         {
+            rightSideThrustVFX.Play();
             isRotating = true;
             ApplyRotation(Vector3.forward, torqueAmount);
         }
         else if (rotation.ReadValue<float>() > 0)
         {
+            leftSideThrustVFX.Play();
             isRotating = true;
             ApplyRotation(-Vector3.forward, torqueAmount);
         }
         //No rotation
         else
         {
+            leftSideThrustVFX.Stop();
+            rightSideThrustVFX.Stop();
             isRotating = false;
         }
     }
@@ -190,5 +204,12 @@ public class PlayerMovement : MonoBehaviour
     {
         torqueAmount = Mathf.Abs(torqueAmount);
         rb.AddRelativeTorque(rotationDir * torqueAmount * Time.fixedDeltaTime);
+    }
+
+    public void StopAllVFX()
+    {
+        mainThrustVFX?.Stop();
+        leftSideThrustVFX.Stop();
+        rightSideThrustVFX?.Stop();
     }
 }

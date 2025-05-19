@@ -27,6 +27,11 @@ public class CollisionDetection : MonoBehaviour
     [Tooltip("The parent game object containing the player mesh renderer components")]
     GameObject parentRenderer;
 
+    [SerializeField]
+    ParticleSystem smokeVFX;
+
+    [SerializeField]
+    ParticleSystem extraPartsVFX;
 
     [Header("Settings")]
     [SerializeField]
@@ -125,6 +130,9 @@ public class CollisionDetection : MonoBehaviour
         collisionSource.Play();
 
         //Logic
+        extraPartsVFX.Play();
+        playerMovement.StopAllVFX();
+        smokeVFX.Play();
         isDead = true;
         playerMovement.enabled = false;
         DeparentRenderer();
