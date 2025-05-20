@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(PlayerMovement))]
@@ -33,6 +34,12 @@ public class CollisionDetection : MonoBehaviour
     [SerializeField]
     ParticleSystem extraPartsVFX;
 
+    [SerializeField]
+    InputAction levelLoader;
+
+    [SerializeField]
+    InputAction collisionDisabler;
+
     [Header("Settings")]
     [SerializeField]
     [Tooltip("The delay between finishing the current level and loading the next level")]
@@ -50,6 +57,10 @@ public class CollisionDetection : MonoBehaviour
     bool isDead = false;
     bool hasFinishedLevel = false;
 
+    //debugging attributes
+    bool isCollidable = true;
+    float levelLoaderTimeout = 1f;
+
     //Tag strings
     const string FRIENDLY_TAG_STRING = "Friendly";
     const string FINISH_TAG_STRING = "Finish";
@@ -59,6 +70,8 @@ public class CollisionDetection : MonoBehaviour
     const string NULL_COLLISION_SOURCE_STRING = "Warning: No collision source given!";
     const string NULL_EXTRA_PARTS_VFX_STRING = "Warning: No extra parts VFX given!";
     const string NULL_SMOKE_VFX_STRING = "Warning: No smoke VFX given!";
+    const string NULL_LEVEL_LOADER_INPUT_ACTION_STRING = "Warning: no level loader input action!";
+    const string NULL_COLLIDABLE_INPUT_ACTION_STRING = "Warning: no collision disabler action!";
 
     /*
      * 
@@ -66,9 +79,33 @@ public class CollisionDetection : MonoBehaviour
      * 
      */
 
+    private void OnEnable()
+    {
+        if (ObjectReference.IsNull(levelLoader, NULL_LEVEL_LOADER_INPUT_ACTION_STRING)) return;
+        if (ObjectReference.IsNull(collisionDisabler, NULL_COLLIDABLE_INPUT_ACTION_STRING)) return;
+
+
+        levelLoader.Enable();
+        collisionDisabler.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (ObjectReference.IsNull(levelLoader, NULL_LEVEL_LOADER_INPUT_ACTION_STRING)) return;
+        if (ObjectReference.IsNull(collisionDisabler, NULL_COLLIDABLE_INPUT_ACTION_STRING)) return;
+
+        levelLoader.Disable();
+        collisionDisabler.Disable();
+    }
+
     private void Awake()
     {
         InitializeReferences();
+    }
+
+    private void Update()
+    {
+        RespondToDebugKeys();
     }
 
     private void OnCollisionEnter(Collision other)
@@ -115,7 +152,7 @@ public class CollisionDetection : MonoBehaviour
         if (ObjectReference.IsNull(collisionSource, NULL_COLLISION_SOURCE_STRING)) return;
         if (isDead) return;
         if (hasFinishedLevel) return;
-
+        if (!isCollidable) return;
 
         //Audio
         collisionSource.Stop();
@@ -124,7 +161,7 @@ public class CollisionDetection : MonoBehaviour
 
         //Logic
         hasFinishedLevel = true;
-        StartCoroutine(LoadNextLevel());
+        StartCoroutine(LoadNextLevel(delayBeforeSceneReload));
     }
 
     /// <summary>
@@ -139,7 +176,7 @@ public class CollisionDetection : MonoBehaviour
         if (ObjectReference.IsNull(smokeVFX, NULL_SMOKE_VFX_STRING)) return;
         if (hasFinishedLevel) return;
         if (isDead) return;
-
+        if (!isCollidable) return;
 
         //Audio
         collisionSource.Stop();
@@ -153,7 +190,7 @@ public class CollisionDetection : MonoBehaviour
         isDead = true;
         playerMovement.enabled = false;
         DeparentRenderer();
-        StartCoroutine(LoadCurrentLevel());
+        StartCoroutine(LoadCurrentLevel(delayBeforeSceneReload));
     }
 
     /// <summary>
@@ -249,10 +286,36 @@ public class CollisionDetection : MonoBehaviour
     }
 
     /// <summary>
+    /// Debugging logic for dev use only
+    /// </summary>
+    private void RespondToDebugKeys()
+    {
+        if (ObjectReference.IsNull(levelLoader, NULL_LEVEL_LOADER_INPUT_ACTION_STRING)) return;
+        if (ObjectReference.IsNull(collisionDisabler, NULL_COLLIDABLE_INPUT_ACTION_STRING)) return;
+
+        //Control collision
+        if (collisionDisabler.WasPressedThisFrame())
+        {
+            isCollidable = !isCollidable;
+        }
+
+        //Handling button held issues
+        if (levelLoaderTimeout > 0)
+        {
+            levelLoaderTimeout -= Time.deltaTime;
+        }
+        //Load next level
+        else if (levelLoader.WasPressedThisFrame())
+        {
+            StartCoroutine(LoadNextLevel());
+        }
+    }
+
+    /// <summary>
     /// Coroutine to load the next level after delay
     /// </summary>
     /// <returns></returns>
-    IEnumerator LoadNextLevel()
+    IEnumerator LoadNextLevel(float delay = 0)
     {
         //Get next level indes
         int nextLevelIndex = SceneManager.GetActiveScene().buildIndex + 1;
@@ -262,7 +325,7 @@ public class CollisionDetection : MonoBehaviour
         }
 
         //Load next level
-        yield return new WaitForSeconds(delayBeforeSceneReload);
+        yield return new WaitForSeconds(delay);
         SceneManager.LoadScene(nextLevelIndex);
     }
 
@@ -270,10 +333,10 @@ public class CollisionDetection : MonoBehaviour
     /// Coroutine to load next level after delay
     /// </summary>
     /// <returns></returns>
-    IEnumerator LoadCurrentLevel()
+    IEnumerator LoadCurrentLevel(float delay = 0)
     {
         //Load current level
-        yield return new WaitForSeconds(delayBeforeSceneReload);
+        yield return new WaitForSeconds(delay);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

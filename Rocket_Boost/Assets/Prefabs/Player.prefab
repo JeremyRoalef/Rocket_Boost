@@ -368,6 +368,40 @@ MonoBehaviour:
   parentRenderer: {fileID: 1340843308666748408}
   smokeVFX: {fileID: 4793490060036398344}
   extraPartsVFX: {fileID: 6039889813099809348}
+  levelLoader:
+    m_Name: Level Loader
+    m_Type: 2
+    m_ExpectedControlType: Button
+    m_Id: 36fbccbf-b004-45c4-a9db-57111d14f656
+    m_Processors: 
+    m_Interactions: Tap
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 270ea8dd-6438-4f8e-9663-013169936b10
+      m_Path: <Keyboard>/l
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Level Loader
+      m_Flags: 0
+    m_Flags: 0
+  collisionDisabler:
+    m_Name: Collision Disabler
+    m_Type: 2
+    m_ExpectedControlType: Button
+    m_Id: 22e31c03-3228-4d6b-a449-8bafd0491983
+    m_Processors: 
+    m_Interactions: Press
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 514c8a35-446d-4d4f-a4db-891843e1d285
+      m_Path: <Keyboard>/c
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Collision Disabler
+      m_Flags: 0
+    m_Flags: 0
   delayBeforeSceneReload: 3
   minRendererForce: -500
   maxRendererForce: 500
