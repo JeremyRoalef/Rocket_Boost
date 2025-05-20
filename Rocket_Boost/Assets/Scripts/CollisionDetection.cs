@@ -55,16 +55,20 @@ public class CollisionDetection : MonoBehaviour
     const string FINISH_TAG_STRING = "Finish";
     const string FUEL_TAG_STRING = "Fuel";
 
+    const string NULL_PLAYER_MOVEMENT_STRING = "Warning: No player movement script given!";
+    const string NULL_COLLISION_SOURCE_STRING = "Warning: No collision source given!";
+    const string NULL_EXTRA_PARTS_VFX_STRING = "Warning: No extra parts VFX given!";
+    const string NULL_SMOKE_VFX_STRING = "Warning: No smoke VFX given!";
+
+    /*
+     * 
+     * ---------------UNITY EVENTS---------------
+     * 
+     */
+
     private void Awake()
     {
-        //Check for player movement script
-        if (playerMovement == null)
-        {
-            if (!TryGetComponent<PlayerMovement>(out playerMovement))
-            {
-                Debug.LogWarning("No player movement script found");
-            }
-        }
+        InitializeReferences();
     }
 
     private void OnCollisionEnter(Collision other)
@@ -96,14 +100,22 @@ public class CollisionDetection : MonoBehaviour
         }
     }
 
+    /*
+     * 
+     * ---------------PRIVATE METHODS---------------
+     * 
+     */
+
     /// <summary>
     /// Method to handle level completion logic (i.e., audio playing, scene loading, etc.)
     /// </summary>
     private void HandleLevelComplete()
     {
         //Invalid Checks
+        if (ObjectReference.IsNull(collisionSource, NULL_COLLISION_SOURCE_STRING)) return;
         if (isDead) return;
         if (hasFinishedLevel) return;
+
 
         //Audio
         collisionSource.Stop();
@@ -121,8 +133,13 @@ public class CollisionDetection : MonoBehaviour
     void HandleDeath()
     {
         //Invalid Checks
+        if (ObjectReference.IsNull(collisionSource, NULL_COLLISION_SOURCE_STRING)) return;
+        if (ObjectReference.IsNull(extraPartsVFX, NULL_EXTRA_PARTS_VFX_STRING)) return;
+        if (ObjectReference.IsNull(playerMovement, NULL_PLAYER_MOVEMENT_STRING)) return;
+        if (ObjectReference.IsNull(smokeVFX, NULL_SMOKE_VFX_STRING)) return;
         if (hasFinishedLevel) return;
         if (isDead) return;
+
 
         //Audio
         collisionSource.Stop();
@@ -171,6 +188,64 @@ public class CollisionDetection : MonoBehaviour
     {
         Debug.Log("Fuel Picked Up");
         Destroy(other.gameObject);
+    }
+
+    /// <summary>
+    /// Method to initialize the references for collision detection
+    /// </summary>
+    private void InitializeReferences()
+    {
+        //Check for player movement script
+        if (playerMovement == null)
+        {
+            if (!TryGetComponent<PlayerMovement>(out playerMovement))
+            {
+                Debug.LogWarning("No player movement script found");
+            }
+        }
+
+        //Check for audio source component
+        if (collisionSource == null)
+        {
+            if (!TryGetComponent<AudioSource>(out collisionSource))
+            {
+                Debug.LogWarning("No audio source component found");
+            }
+        }
+
+        //Check for audio clips
+        if (deathClip == null)
+        {
+            Debug.LogWarning("No audio clip found");
+        }
+
+        //Check for audio clips
+        if (levelCompleteClip == null)
+        {
+            Debug.LogWarning("No audio clip found");
+        }
+
+        //Check for player movement script
+        if (parentRenderer == null)
+        {
+            Debug.LogWarning("No parent renderer game object");
+        }
+
+        if (smokeVFX == null)
+        {
+            if (!TryGetComponent<ParticleSystem>(out smokeVFX))
+            {
+                Debug.LogWarning("No particle system component found");
+            }
+        }
+
+        if (extraPartsVFX == null)
+        {
+            if (!TryGetComponent<ParticleSystem>(out extraPartsVFX))
+            {
+                Debug.LogWarning("No particle system component found");
+            }
+        }
     }
 
     /// <summary>
