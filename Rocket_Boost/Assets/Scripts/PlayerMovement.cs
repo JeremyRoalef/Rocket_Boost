@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour
     bool isThrusting = false;
     bool isRotating = false;
 
-    const string NULL_RB_STRING = "Warning: No rigidbody component!";
+    const string NULL_Rigidbody_STRING = "Warning: No rigidbody component!";
     const string NULL_THRUST_STRING = "Warning: No thrust imput action!";
     const string NULL_ROTATION_STRING = "Warning: No rotation input action!";
     const string NULL_MAIN_THRUST_VFX_STRING = "Warning: No main thrust VFX component!";
@@ -107,6 +107,13 @@ public class PlayerMovement : MonoBehaviour
         mainThrustVFX?.Stop();
         leftSideThrustVFX.Stop();
         rightSideThrustVFX?.Stop();
+    }
+
+    public void HandleCrash()
+    {
+        if (ObjectReference.IsNull(rb, NULL_Rigidbody_STRING)) return;
+
+        rb.freezeRotation = false;
     }
 
     /*
@@ -246,7 +253,7 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     void ApplyRotation(Vector3 rotationDir, float torqueAmount)
     {
-        if (ObjectReference.IsNull(rb, NULL_RB_STRING)) return;
+        if (ObjectReference.IsNull(rb, NULL_Rigidbody_STRING)) return;
 
         torqueAmount = Mathf.Abs(torqueAmount);
         rb.AddRelativeTorque(rotationDir * torqueAmount * Time.fixedDeltaTime);

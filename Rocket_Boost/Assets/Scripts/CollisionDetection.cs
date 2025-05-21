@@ -186,6 +186,7 @@ public class CollisionDetection : MonoBehaviour
         //Logic
         extraPartsVFX.Play();
         playerMovement.StopAllVFX();
+        playerMovement.HandleCrash();
         smokeVFX.Play();
         isDead = true;
         playerMovement.enabled = false;
