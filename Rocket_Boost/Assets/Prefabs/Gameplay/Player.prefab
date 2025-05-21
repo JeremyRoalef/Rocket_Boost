@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4854452372356162407}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -450,7 +450,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5142766202905700886}
   - component: {fileID: 6838396919591431735}
-  - component: {fileID: 6061932713072541929}
+  - component: {fileID: 8234871810806027793}
   m_Layer: 0
   m_Name: Spot Light
   m_TagString: Untagged
@@ -538,7 +538,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &6061932713072541929
+--- !u!114 &8234871810806027793
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5404,7 +5404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2556463632170548303}
   - component: {fileID: 5209808988407697418}
-  - component: {fileID: 3890203509473682231}
+  - component: {fileID: 8285899748842985300}
   m_Layer: 0
   m_Name: Highlight
   m_TagString: Untagged
@@ -5492,7 +5492,7 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!114 &3890203509473682231
+--- !u!114 &8285899748842985300
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

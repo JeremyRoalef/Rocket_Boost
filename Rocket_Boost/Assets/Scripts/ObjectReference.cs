@@ -20,4 +20,17 @@ public static class ObjectReference
             return false;
         }
     }
+
+    public static bool IsNull(UnityEngine.Object reference, string warningIfNull)
+    {
+        if (reference == null)
+        {
+            Debug.LogWarning(warningIfNull);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
