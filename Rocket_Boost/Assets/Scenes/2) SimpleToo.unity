@@ -279,6 +279,23 @@ MonoBehaviour:
   movementVector: {x: 0, y: 0, z: 10}
   objectSpeed: 1.4
   initialMoveOffset: 0.23
+--- !u!1 &815850510 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 189505541444226594, guid: 8bdba03a660217243b9be8ad16e0f591, type: 3}
+  m_PrefabInstance: {fileID: 7297536089133421940}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &815850518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815850510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d21e3bd9568ccd489da4322a239c798, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &950697019
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -641,7 +658,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 189505541444226594, guid: 8bdba03a660217243b9be8ad16e0f591, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 815850518}
   m_SourcePrefab: {fileID: 100100000, guid: 8bdba03a660217243b9be8ad16e0f591, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
